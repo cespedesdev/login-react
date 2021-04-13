@@ -58,26 +58,26 @@ class Login extends Component {
     render() {     
         const {email, password} = this.state
         return (
-            <div className="text-center">
-                <div className="form-signin">
-                    <form onSubmit={this.submitHandler}>
-                    <h1 className="h3 mb-3 fw-normal">Please sign in</h1>
-                        <div className="form-floating">
+            <div className="container py-5 text-center">
+                <main className="form-signin">
+                    <form onSubmit={this.submitHandler} className="mx-auto">
+                    <h1 className="h3 mb-3 fw-normal">Inicie Sesión</h1>
+                        <div className="form-floating py-1">
                             <input type="email" className="form-control" id="floatingInput" placeholder="name@example.com" name="email" value={email} onChange={this.changeHandler}/>
-                            <label htmlFor="floatingInput">Email address</label>
+                            <label htmlFor="floatingInput">Dirección de email</label>
                         </div>
-                        <div className="form-floating">
+                        <div className="form-floating py-1">
                             <input type="password" className="form-control" id="floatingPassword" placeholder="Password" name="password" value={password} onChange={this.changeHandler}/>
-                            <label htmlFor="floatingPassword">Password</label>
+                            <label htmlFor="floatingPassword">Contraseña</label>
                         </div>
                         <div className="checkbox mb-3">
                             <label>
-                                <input type="checkbox" value="remember-me"/> Remember me
+                                ¿No tiene cuenta? <a href="./register">Haga click aquí para registrarse</a>
                             </label>
                         </div>
-                        <button className="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+                        <button className="btn btn-lg btn-primary" type="submit">Iniciar</button>
                     </form>
-                </div> 
+                </main> 
             </div>
         )
     }
