@@ -11,7 +11,9 @@ class Register extends Component {
              name: '',
              email: '',
              password: '',
-             c_password: ''
+             c_password: '',
+             errors: {}
+
         }
     }
     
@@ -22,20 +24,74 @@ class Register extends Component {
             }
         )
     }
-    submitHandler = (e) => {
-        e.preventDefault()
-        axios.post('http://localhost:8000/api/register', this.state).then(response => {
-            return response
-        }).then( response => {
-            alert('Gracias por registrarse');
-            window.location.href="/";
+
+    handleValidation(){
+        let email = this.state.email;
+        let password = this.state.password;
+        let c_password = this.state.c_password;
+        let name = this.state.name;
+
+        let errors = {};
+        let formIsValid = true;
+
+        //Name
+        if(name.length <= 1){
+            formIsValid = false;
+            errors["name"] = "Cannot be empty";
+         }
+
+        if(password.length < 1){
+           formIsValid = false;
+           errors["password"] = "Cannot be empty";
         }
-        ).catch(
-            error => {
-                console.log(error)
+        if(password.length < 6){
+            formIsValid = false;
+            errors["password"] = "La contraseña debe tener al menos 6 caracteres.";
+         }
+        if(c_password != password){
+            formIsValid = false;
+            errors["c_password"] = "Las contraseñas no coinciden";
+         }
+     
+        //Email
+        if(email === "undefined"){
+           formIsValid = false;
+           errors["email"] = "Cannot be empty";
+        }
+  
+        if(typeof email !== "undefined"){
+           let lastAtPos = email.lastIndexOf('@');
+           let lastDotPos = email.lastIndexOf('.');
+
+           if (!(lastAtPos < lastDotPos && lastAtPos > 0 && email.indexOf('@@') == -1 && lastDotPos > 2 && (email.length - lastDotPos) > 2)) {
+              formIsValid = false;
+              errors["email"] = "Email is not valid";
             }
-        )
-        console.log(this.state)
+       }  
+
+       this.setState({errors: errors});
+       return formIsValid;
+   }
+
+    submitHandler = (e) => {
+
+        if(!this.handleValidation()){
+            alert("Por favor, rellene bien los campos.");
+         }else{
+            e.preventDefault()
+            axios.post('http://localhost:8000/api/register', this.state).then(response => {
+                return response
+            }).then( response => {
+                alert('Gracias por registrarse');
+                window.location.href="/";
+            }
+            ).catch(
+                error => {
+                    console.log(error)
+                }
+            )
+            console.log(this.state)
+        }
     }
 
     componentDidMount() {

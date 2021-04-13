@@ -10,9 +10,13 @@ class Login extends Component {
     
         this.state = {
              email: '',
-             password: ''
+             password: '',
+             errors: {}
+
         }
     }
+
+    
     
     changeHandler = (e) => {
         this.setState(
@@ -21,31 +25,73 @@ class Login extends Component {
             }
         )
     }
-    submitHandler = async(e) => {
-        e.preventDefault()
-        await axios.post('http://localhost:8000/api/login', {email: this.state.email, password: this.state.password}).then(response => {
-            return response
-        }).then(
-            response => {
-                console.log(response.data.name);
-                if(response.data.name != null){
-                    var respuesta = response.data;
-                    cookies.set('name', respuesta.name, {path: "/"});
-                    cookies.set('token', respuesta.token, {path: "/"});
-                    alert('Bienvenido ' + respuesta.name);
-                    window.location.href="./dashboard"
 
-                }
-                else{
-                    alert('Usuario y contraseña no es correcto');
-                }
+    handleValidation(){
+        let email = this.state.email;
+        let password = this.state.password;
+
+        let errors = {};
+        let formIsValid = true;
+
+        //Name
+        if(password.lengt < 1){
+           formIsValid = false;
+           errors["password"] = "Cannot be empty";
+        }
+     
+        //Email
+        if(email === "undefined"){
+           formIsValid = false;
+           errors["email"] = "Cannot be empty";
+        }
+  
+        if(typeof email !== "undefined"){
+           let lastAtPos = email.lastIndexOf('@');
+           let lastDotPos = email.lastIndexOf('.');
+
+           if (!(lastAtPos < lastDotPos && lastAtPos > 0 && email.indexOf('@@') == -1 && lastDotPos > 2 && (email.length - lastDotPos) > 2)) {
+              formIsValid = false;
+              errors["email"] = "Email is not valid";
             }
-        ).catch(
-            error => {
-                console.log(error)
-            }
-        )
-        console.log(this.state)
+       }  
+
+       this.setState({errors: errors});
+       return formIsValid;
+   }
+
+    submitHandler = async(e) => {
+        
+        if(!this.handleValidation()){
+            
+            alert("Por favor, rellene bien los campos.");
+         }
+        else{
+            e.preventDefault();
+            await axios.post('http://localhost:8000/api/login', {email: this.state.email, password: this.state.password}).then(response => {
+                return response
+            }).then(
+                response => {
+                    console.log(response.data.name);
+                    if(response.data.name != null){
+                        var respuesta = response.data;
+                        cookies.set('name', respuesta.name, {path: "/"});
+                        cookies.set('token', respuesta.token, {path: "/"});
+                        alert('Bienvenido ' + respuesta.name);
+                        window.location.href="./dashboard"
+    
+                    }
+                    else{
+                        alert('Usuario y contraseña no es correcto');
+                    }
+                }
+            ).catch(
+                error => {
+                    console.log(error)
+                }
+            )
+            console.log(this.state.errors)
+        }
+        
     }
 
     componentDidMount() {
