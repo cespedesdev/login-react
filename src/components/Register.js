@@ -2,6 +2,7 @@ import axios from 'axios'
 import React, { Component } from 'react'
 import Cookies from 'universal-cookie';
 
+// Declaración de la variable para almacenar las cookies
 const cookies = new Cookies();
 
 class Register extends Component {
@@ -17,6 +18,7 @@ class Register extends Component {
         }
     }
     
+    //Mediante esta función se asigna cualquier cambio realizado en los campos
     changeHandler = (e) => {
         this.setState(
             {
@@ -25,6 +27,7 @@ class Register extends Component {
         )
     }
 
+    //Mediante esta fuynción se validan los campos del formulario
     handleValidation(){
         let email = this.state.email;
         let password = this.state.password;
@@ -34,31 +37,35 @@ class Register extends Component {
         let errors = {};
         let formIsValid = true;
 
-        //Name
+        //Esta condicional explica que si el campo "name" es menor o igual a 1, asigne un error al array "errors"
         if(name.length <= 1){
             formIsValid = false;
             errors["name"] = "Cannot be empty";
          }
 
+        //Esta condicional explica que si el campo "password" es menor o igual a 1, asigne un error al array "errors"
         if(password.length < 1){
            formIsValid = false;
            errors["password"] = "Cannot be empty";
         }
+        //Esta condicional explica que si el campo "password" es menor o igual a 6, asigne un error al array "errors"
         if(password.length < 6){
             formIsValid = false;
             errors["password"] = "La contraseña debe tener al menos 6 caracteres.";
          }
+
+        //Esta condicional explica que si el campo "c_password" no coincide con el campo "password", asigne un error al array "errors"
         if(c_password != password){
             formIsValid = false;
             errors["c_password"] = "Las contraseñas no coinciden";
          }
      
-        //Email
+        //Validación de que el email no esté en blanco o indefinido
         if(email === "undefined"){
            formIsValid = false;
            errors["email"] = "Cannot be empty";
         }
-  
+        //Mediante esta condicional se observa el formato correcto del email
         if(typeof email !== "undefined"){
            let lastAtPos = email.lastIndexOf('@');
            let lastDotPos = email.lastIndexOf('.');
@@ -68,11 +75,12 @@ class Register extends Component {
               errors["email"] = "Email is not valid";
             }
        }  
-
+       //Se fijan los errores
        this.setState({errors: errors});
        return formIsValid;
    }
 
+   //Esta función maneja el envio del formulario a ser procesado por la Api
     submitHandler = (e) => {
 
         if(!this.handleValidation()){
@@ -94,11 +102,14 @@ class Register extends Component {
         }
     }
 
+    //ciclo de vida del componente
     componentDidMount() {
+        //Evalua si las cookies tienen un valor llamado token asignado
         if(cookies.get('token')){
             window.location.href="./dashboard";
         }
     }
+    //Renderización del formulario
     render() {     
         const {name, email, password, c_password} = this.state
         return (
