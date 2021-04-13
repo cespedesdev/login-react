@@ -1,6 +1,8 @@
 import axios from 'axios'
 import React, { Component } from 'react'
+import Cookies from 'universal-cookie';
 
+const cookies = new Cookies();
 
 class Login extends Component {
     constructor(props) {
@@ -19,17 +21,40 @@ class Login extends Component {
             }
         )
     }
-    submitHandler = (e) => {
+    submitHandler = async(e) => {
         e.preventDefault()
-        axios.post('http://localhost:8000/api/login', this.state).then(response => {
-            console.log(response)
-        }).catch(
+        await axios.post('http://localhost:8000/api/login', {email: this.state.email, password: this.state.password}).then(response => {
+            return response
+        }).then(
+            response => {
+                console.log(response.data.name);
+                if(response.data.name != null){
+                    var respuesta = response.data;
+                    cookies.set('name', respuesta.name, {path: "/"});
+                    cookies.set('token', respuesta.token, {path: "/"});
+                    alert('Bienvenido ' + respuesta.name);
+                    window.location.href="./dashboard"
+
+                }
+                else{
+                    alert('Usuario y contraseña no es correcto');
+                }
+            }
+        ).catch(
             error => {
                 console.log(error)
             }
         )
         console.log(this.state)
     }
+
+    componentDidMount() {
+        if(cookies.get('token')){
+            window.location.href="./dashboard";
+        }
+    }
+    
+
     render() {     
         const {email, password} = this.state
         return (
